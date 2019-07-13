@@ -17,13 +17,12 @@ class MainActivity : BaseActivity() {
         createWithAssistedInject()
     }
 
-    //every activity rotation implies fresh instance of PermissionViewModel backed with PermissionEnsurer
+    //PermissionViewModel is created each time activity is rotatated
     fun createWithAssistedInject(): PermissionViewModel {
         return appComponent.permissionViewModelFactory.create(AndroidPermissionEnsurer(this))
     }
 
-    //BAD - //every activity rotation implies keeps the same instance of PermissionViewModel
-    // this will broke PermissionEnsurer functionality
+    //BAD - PermissionViewModel survives activity rotation - this will broke PermissionEnsurer functionality
     fun createUsingViewModelProviders(): PermissionViewModel {
         val factory = appComponent.permissionViewModelFactory
         val permissionEnsurer = AndroidPermissionEnsurer(this)
