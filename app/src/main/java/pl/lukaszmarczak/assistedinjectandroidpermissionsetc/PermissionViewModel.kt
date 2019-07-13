@@ -8,7 +8,6 @@ import kotlinx.coroutines.async
 import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.base.BaseViewModel
 import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.base.Either
 import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.base.Failure
-import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.base.LiveEvent
 import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.interactor.location.GetLastLocationUseCase
 import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.interactor.location.LocationFetchException
 import pl.lukaszmarczak.assistedinjectandroidpermissionsetc.interactor.location.LocationResponse
@@ -22,36 +21,39 @@ class PermissionViewModel @AssistedInject constructor(
         @Assisted private val permissionEnsurer: PermissionEnsurer
 ) : BaseViewModel() {
 
+    @AssistedInject.Factory
+    interface Factory {
+        fun create(permissionEnsurer: PermissionEnsurer): PermissionViewModel
+    }
+
     init {
         println("creating new instance of ${this.javaClass.simpleName}")
         println("hashCode ${this.hashCode()}")
     }
 
     data class State(val name: String,
-                     val surname: String)
-
-    fun restoreState(state: State): PermissionViewModel {
-        name.value = state.name
-        surname.value = state.surname
-        println("state restored")
-        return this
+                     val surname: String) {
+        override fun toString(): String {
+            return "(name='$name', surname='$surname')"
+        }
     }
-
-
-    @AssistedInject.Factory
-    interface Factory {
-        fun create(permissionEnsurer: PermissionEnsurer): PermissionViewModel
-    }
-
-    val userLocation = MutableLiveData<LocationResponse>()
 
     val name = MutableLiveData<String>()
 
     val surname = MutableLiveData<String>()
 
-    val navigateHome = LiveEvent<Any>()
+    val userLocation = MutableLiveData<LocationResponse>()
 
-    val checkYourLocationSettings = LiveEvent<Any>()
+    val navigateHome = MutableLiveData<Any>()
+
+    val checkYourLocationSettings = MutableLiveData<Any>()
+
+    fun restoreState(state: State): PermissionViewModel {
+        name.value = state.name
+        surname.value = state.surname
+        println("state $state restored")
+        return this
+    }
 
     fun laterClick() {
         navigateHome.value = Any()
@@ -65,16 +67,12 @@ class PermissionViewModel @AssistedInject constructor(
 
     private fun handleFailure(): (Failure) -> Any {
         return {
-            if (isNullableLocationError(it)) {
+            if (it is NullableLocationException) {
                 checkYourLocationSettings.value = Any()
             } else {
                 super.handleFailure(it)
             }
         }
-    }
-
-    private fun isNullableLocationError(it: Failure): Boolean {
-        return it is NullableLocationException
     }
 
     private fun handleLocation(): (LocationResponse) -> Any {
