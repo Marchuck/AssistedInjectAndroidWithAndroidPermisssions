@@ -67,4 +67,4 @@ class MyActivity : Activity{
 }
 ```
 
-I am not certain about that solution, PRs and other tips, suggestions are welcome.
+I am not certain about that solution, PRs and other tips / suggestions are welcome.
