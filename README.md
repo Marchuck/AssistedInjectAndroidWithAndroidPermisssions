@@ -1,4 +1,4 @@
-# AssistedInjectAndroidWithAndroidPermisssions
+# AssistedInject on Android example
 
 demonstration of assisted inject on Android.
 
