@@ -40,7 +40,7 @@ class MyActivity : Activity{
 
 ```
 
-with assisted inject we can just tell dagger: "hey! create a factory for this particular viewmodel"
+with assisted inject we can just tell Dagger: "hey! create a factory for this particular viewmodel with following parameters"
 
 ```
 class MyViewModel @AssistedInject constructor(
